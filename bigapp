@@ -1,0 +1,34 @@
+# -*- encoding: utf-8 -*-
+
+import flask,json
+server=flask.Flask(__name__)#__name__代表当前的python文件。把当前的python文件当做一个服务启动
+@server.route('/webhook',methods=['post'])
+#第一个参数就是路径,第二个参数支持的请求方式，不写的话默认是get，
+#加了@server.route才是一个接口，不然就是一个普通函数
+def webhook():
+    #loginName= flask.request.values.get('loginName')
+    #password= flask.request.values.get('password')
+    #if loginName and password:
+    #    res = {'msg': '调用成功' }
+    #else:
+    #    res = {'msg': '调用失败'}
+    #json.dumps 序列化时对中文默认使用的ascii编码，输出中文需要设置ensure_ascii=False
+    #data = flask.request.get_json()
+    data = flask.request.get_data(as_text=True)
+    print "data is:"
+    print data
+    data = json.loads(data)
+    print "dict data"
+    print data
+    print "type is %s" % data['type']
+    print "resource is %s" % data['event_data']['resources'][0]['resource_url']
+
+    data_header = flask.request.headers['webhook-test']
+    print "header is %s" % data_header
+    res = {"msg":"SUCCESS"}
+    return json.dumps(res,ensure_ascii=False)
+if __name__ == '__main__':
+    # port可以指定端口，默认端口是5000
+    # host默认是服务器，默认是127.0.0.1
+    # debug=True 修改时不关闭服务
+    server.run(debug=True,port=80,host='0.0.0.0')
